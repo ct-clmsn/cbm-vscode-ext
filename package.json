@@ -1,0 +1,358 @@
+{
+  "name": "codebase-memory-vscode",
+  "displayName": "Codebase Memory",
+  "description": "Codebase knowledge graph: structural search, call traces, architecture, and 3D graph visualization",
+  "version": "0.1.0",
+  "publisher": "DeusData",
+  "license": "BSL-1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DeusData/codebase-memory-mcp-vscode-ext"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "codebase",
+    "knowledge-graph",
+    "mcp",
+    "code-intelligence",
+    "tree-sitter",
+    "architecture"
+  ],
+  "icon": "icon.png",
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:codebase-memory.projects",
+    "onView:codebase-memory.searchResults",
+    "onCommand:codebase-memory.startServer",
+    "onCommand:codebase-memory.stopServer",
+    "onCommand:codebase-memory.indexRepository",
+    "onCommand:codebase-memory.listProjects",
+    "onCommand:codebase-memory.deleteProject",
+    "onCommand:codebase-memory.searchGraph",
+    "onCommand:codebase-memory.tracePath",
+    "onCommand:codebase-memory.showArchitecture",
+    "onCommand:codebase-memory.showGraphSchema",
+    "onCommand:codebase-memory.detectChanges",
+    "onCommand:codebase-memory.queryGraph",
+    "onCommand:codebase-memory.openGraphPanel",
+    "onCommand:codebase-memory.getCodeSnippet",
+    "onCommand:codebase-memory.searchAtCursor",
+    "onCommand:codebase-memory.traceAtCursor",
+    "onCommand:codebase-memory.snippetAtCursor",
+    "onCommand:codebase-memory.openQueryEditor",
+    "onCommand:codebase-memory.runSavedQuery",
+    "onCommand:codebase-memory.createQueryFromCursor",
+    "onCommand:codebase-memory.bm25Search",
+    "onCommand:codebase-memory.bm25AtCursor",
+    "onCommand:codebase-memory.semanticSearch",
+    "onCommand:codebase-memory.semanticAtCursor",
+    "onCommand:codebase-memory.codeSearch",
+    "onCommand:codebase-memory.codeSearchAtCursor"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codebase-memory.startServer",
+        "title": "Codebase Memory: Start Server"
+      },
+      {
+        "command": "codebase-memory.stopServer",
+        "title": "Codebase Memory: Stop Server"
+      },
+      {
+        "command": "codebase-memory.indexRepository",
+        "title": "Codebase Memory: Index Repository"
+      },
+      {
+        "command": "codebase-memory.listProjects",
+        "title": "Codebase Memory: List Indexed Projects"
+      },
+      {
+        "command": "codebase-memory.deleteProject",
+        "title": "Codebase Memory: Delete Project Index"
+      },
+      {
+        "command": "codebase-memory.searchGraph",
+        "title": "Codebase Memory: Search Graph"
+      },
+      {
+        "command": "codebase-memory.tracePath",
+        "title": "Codebase Memory: Trace Call Path"
+      },
+      {
+        "command": "codebase-memory.showArchitecture",
+        "title": "Codebase Memory: Show Architecture"
+      },
+      {
+        "command": "codebase-memory.showGraphSchema",
+        "title": "Codebase Memory: Show Graph Schema"
+      },
+      {
+        "command": "codebase-memory.detectChanges",
+        "title": "Codebase Memory: Detect Changes"
+      },
+      {
+        "command": "codebase-memory.queryGraph",
+        "title": "Codebase Memory: Execute Cypher Query"
+      },
+      {
+        "command": "codebase-memory.openGraphPanel",
+        "title": "Codebase Memory: Open 3D Graph View"
+      },
+      {
+        "command": "codebase-memory.getCodeSnippet",
+        "title": "Codebase Memory: Get Code Snippet"
+      },
+      {
+        "command": "codebase-memory.searchAtCursor",
+        "title": "Codebase Memory: Search Graph at Cursor"
+      },
+      {
+        "command": "codebase-memory.traceAtCursor",
+        "title": "Codebase Memory: Trace Call Path at Cursor"
+      },
+      {
+        "command": "codebase-memory.snippetAtCursor",
+        "title": "Codebase Memory: Get Code Snippet at Cursor"
+      },
+      {
+        "command": "codebase-memory.openQueryEditor",
+        "title": "Codebase Memory: Open Query Editor"
+      },
+      {
+        "command": "codebase-memory.runSavedQuery",
+        "title": "Codebase Memory: Run Saved Query"
+      },
+      {
+        "command": "codebase-memory.createQueryFromCursor",
+        "title": "Codebase Memory: Create Saved Query from Symbol"
+      },
+      {
+        "command": "codebase-memory.searchResults.clear",
+        "title": "Codebase Memory: Clear Search Results"
+      },
+      {
+        "command": "codebase-memory.bm25Search",
+        "title": "Codebase Memory: BM25 Full-Text Search"
+      },
+      {
+        "command": "codebase-memory.bm25AtCursor",
+        "title": "Codebase Memory: BM25 Full-Text Search at Cursor"
+      },
+      {
+        "command": "codebase-memory.semanticSearch",
+        "title": "Codebase Memory: Semantic Vector Search"
+      },
+      {
+        "command": "codebase-memory.semanticAtCursor",
+        "title": "Codebase Memory: Semantic Vector Search at Cursor"
+      },
+      {
+        "command": "codebase-memory.codeSearch",
+        "title": "Codebase Memory: Graph-Augmented Code Search"
+      },
+      {
+        "command": "codebase-memory.codeSearchAtCursor",
+        "title": "Codebase Memory: Graph-Augmented Code Search at Cursor"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codebase-memory",
+          "title": "Codebase Memory",
+          "icon": "$(graph)"
+        }
+      ]
+    },
+    "views": {
+      "codebase-memory": [
+        {
+          "type": "tree",
+          "id": "codebase-memory.projects",
+          "name": "Projects"
+        },
+        {
+          "type": "tree",
+          "id": "codebase-memory.searchResults",
+          "name": "Search Results"
+        }
+      ]
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "codebase-memory.context",
+          "group": "codebase-memory",
+          "when": "editorFocus"
+        }
+      ],
+      "codebase-memory.context": [
+        {
+          "command": "codebase-memory.searchAtCursor",
+          "group": "1_search"
+        },
+        {
+          "command": "codebase-memory.traceAtCursor",
+          "group": "1_search"
+        },
+        {
+          "command": "codebase-memory.snippetAtCursor",
+          "group": "1_search"
+        },
+        {
+          "command": "codebase-memory.bm25AtCursor",
+          "group": "1_search"
+        },
+        {
+          "command": "codebase-memory.semanticAtCursor",
+          "group": "1_search"
+        },
+        {
+          "command": "codebase-memory.codeSearchAtCursor",
+          "group": "1_search"
+        },
+        {
+          "command": "codebase-memory.runSavedQuery",
+          "group": "2_custom"
+        },
+        {
+          "command": "codebase-memory.createQueryFromCursor",
+          "group": "2_custom"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "codebase-memory.indexRepository",
+          "when": "view == codebase-memory.projects",
+          "group": "navigation"
+        },
+        {
+          "command": "codebase-memory.openGraphPanel",
+          "when": "view == codebase-memory.projects",
+          "group": "navigation"
+        },
+        {
+          "command": "codebase-memory.searchResults.clear",
+          "when": "view == codebase-memory.searchResults",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "codebase-memory.deleteProject",
+          "when": "view == codebase-memory.projects && viewItem == project",
+          "group": "inline"
+        },
+        {
+          "command": "codebase-memory.openGraphPanel",
+          "when": "view == codebase-memory.projects && viewItem == project",
+          "group": "inline"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "codebase-memory.context",
+        "label": "Codebase Memory"
+      }
+    ],
+    "keybindings": [
+      {
+        "key": "ctrl+alt+g",
+        "command": "codebase-memory.searchAtCursor",
+        "when": "editorFocus"
+      },
+      {
+        "key": "ctrl+alt+t",
+        "command": "codebase-memory.traceAtCursor",
+        "when": "editorFocus"
+      },
+      {
+        "key": "ctrl+alt+shift+s",
+        "command": "codebase-memory.snippetAtCursor",
+        "when": "editorFocus"
+      },
+      {
+        "key": "ctrl+alt+q",
+        "command": "codebase-memory.runSavedQuery",
+        "when": "editorFocus"
+      },
+      {
+        "key": "ctrl+alt+shift+q",
+        "command": "codebase-memory.createQueryFromCursor",
+        "when": "editorFocus"
+      },
+      {
+        "key": "ctrl+alt+b",
+        "command": "codebase-memory.bm25AtCursor",
+        "when": "editorFocus"
+      },
+      {
+        "key": "ctrl+alt+v",
+        "command": "codebase-memory.semanticAtCursor",
+        "when": "editorFocus"
+      },
+      {
+        "key": "ctrl+alt+shift+f",
+        "command": "codebase-memory.codeSearchAtCursor",
+        "when": "editorFocus"
+      }
+    ],
+    "configuration": {
+      "title": "Codebase Memory",
+      "properties": {
+        "codebase-memory.binaryPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the codebase-memory-mcp binary. Leave empty to search PATH."
+        },
+        "codebase-memory.graphPort": {
+          "type": "number",
+          "default": 9749,
+          "description": "Port for the graph visualization HTTP server"
+        },
+        "codebase-memory.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically start the MCP server when VS Code starts"
+        },
+        "codebase-memory.customQueries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "query": { "type": "string" },
+              "key": { "type": "string", "default": "" }
+            },
+            "required": ["id", "name", "query"]
+          },
+          "default": [],
+          "description": "Saved custom Cypher queries. Use {{word}} and {{project}} as template placeholders."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  }
+}
