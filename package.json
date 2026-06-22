@@ -307,6 +307,102 @@
         "when": "editorFocus"
       }
     ],
+    "languageModelTools": [
+      {
+        "name": "codebase-memory_search-graph",
+        "description": "Search the codebase knowledge graph by name pattern, BM25 full-text query, or semantic vector",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project": { "type": "string", "description": "Project name (default: current workspace)" },
+            "name_pattern": { "type": "string", "description": "Regex pattern to match node names" },
+            "query": { "type": "string", "description": "BM25 full-text search query" },
+            "semantic_query": { "type": "array", "items": { "type": "number" }, "description": "Embedding vector for semantic search" },
+            "max_results": { "type": "integer", "description": "Maximum results (default 50)" }
+          }
+        }
+      },
+      {
+        "name": "codebase-memory_trace-path",
+        "description": "Trace call paths to/from a function in the codebase",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project": { "type": "string", "description": "Project name (default: current workspace)" },
+            "name": { "type": "string", "description": "Function or symbol name to trace" },
+            "max_depth": { "type": "integer", "description": "Maximum trace depth (default 5)" }
+          },
+          "required": ["name"]
+        }
+      },
+      {
+        "name": "codebase-memory_get-code-snippet",
+        "description": "Retrieve a specific code snippet from a file in an indexed project",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project": { "type": "string", "description": "Project name (default: current workspace)" },
+            "file_path": { "type": "string", "description": "Relative path to the source file" },
+            "start_line": { "type": "integer", "description": "Starting line number (1-based)" },
+            "end_line": { "type": "integer", "description": "Ending line number (inclusive)" }
+          },
+          "required": ["file_path", "start_line", "end_line"]
+        }
+      },
+      {
+        "name": "codebase-memory_query-graph",
+        "description": "Execute a raw Cypher query against the codebase knowledge graph",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project": { "type": "string", "description": "Project name (default: current workspace)" },
+            "query": { "type": "string", "description": "Cypher query string" }
+          },
+          "required": ["query"]
+        }
+      },
+      {
+        "name": "codebase-memory_search-code",
+        "description": "Search source code in an indexed project using name, fulltext, or hybrid mode",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project": { "type": "string", "description": "Project name (default: current workspace)" },
+            "query": { "type": "string", "description": "Search query string" },
+            "mode": { "type": "string", "enum": ["name", "fulltext", "hybrid"], "description": "Search mode (default: hybrid)" }
+          },
+          "required": ["query"]
+        }
+      },
+      {
+        "name": "codebase-memory_get-architecture",
+        "description": "Get a high-level architecture overview of an indexed project",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project": { "type": "string", "description": "Project name (default: current workspace)" }
+          }
+        }
+      },
+      {
+        "name": "codebase-memory_list-projects",
+        "description": "List all currently indexed projects",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "name": "codebase-memory_detect-changes",
+        "description": "Detect recently changed files in an indexed project",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project": { "type": "string", "description": "Project name (default: current workspace)" }
+          }
+        }
+      }
+    ],
     "configuration": {
       "title": "Codebase Memory",
       "properties": {

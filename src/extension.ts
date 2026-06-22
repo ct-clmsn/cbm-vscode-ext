@@ -7,6 +7,7 @@ import { QueryEditorProvider } from "./queryEditorProvider";
 import { registerCommands } from "./commands";
 import { registerHoverProvider } from "./hoverProvider";
 import { registerGraphSearchProvider } from "./searchProvider";
+import { registerLmTools } from "./lmTools";
 
 let client: McpClient;
 let treeProvider: ProjectsTreeDataProvider;
@@ -27,6 +28,7 @@ async function activate(ctx: vscode.ExtensionContext): Promise<void> {
   log("Extension activated");
 
   client = new McpClient((msg: string) => log(msg));
+  registerLmTools(ctx, client);
   treeProvider = new ProjectsTreeDataProvider(client);
   searchResultsProvider = new SearchResultsProvider();
   graphProvider = new GraphWebviewProvider(ctx.extensionUri);
