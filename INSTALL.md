@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - **VS Code** 1.85.0 or later
-- **codebase-memory-mcp binary** 0.8.0+ installed on your system PATH
+- **codebase-memory-mcp binary** 0.8.0+ installed on your system PATH (or inside your remote container/SSH host — see [Remote setup](#remote-setup-docker--ssh) below)
 
 ### Installing the binary
 
@@ -28,6 +28,51 @@ winget install DeusData.codebase-memory-mcp
 1. Download the latest `.exe` from [releases](https://github.com/DeusData/codebase-memory-mcp/releases)
 2. Place it in a directory on your `%PATH%` (e.g. `%LOCALAPPDATA%\Programs\codebase-memory-mcp\`)
 3. Verify: open a new PowerShell terminal and run `codebase-memory-mcp --version`
+
+---
+
+## Remote setup (Docker / SSH)
+
+When using VS Code Remote — Containers or Remote — SSH, the extension runs on the **remote** host by default
+(`"extensionKind": ["workspace"]`). This lets the MCP server index your code directly inside the container.
+
+### 1. Install the binary in your container
+
+**Dockerfile:**
+```dockerfile
+# Using the install script
+RUN curl -fsSL https://github.com/DeusData/codebase-memory-mcp/releases/latest/download/install.sh | bash
+
+# Or with Homebrew (Linux)
+RUN brew install deusdata/tap/codebase-memory-mcp
+```
+
+**Or install manually inside a running container:**
+```bash
+# Linux container
+curl -fsSL https://github.com/DeusData/codebase-memory-mcp/releases/latest/download/install.sh | bash
+
+# Verify
+codebase-memory-mcp --version
+```
+
+### 2. Install the extension
+
+Install the extension **from your local VS Code** — it will automatically deploy to the remote host:
+
+```
+# On your Windows/macOS host
+code --install-extension deusdata.codebase-memory-vscode-*.vsix
+```
+
+Then connect to your container/SSH host. The extension activates there and spawns the binary
+inside the remote environment.
+
+### 3. Port forwarding (optional — for the 3D graph view)
+
+If you want to open the 3D graph panel while connected to a remote host, VS Code's
+**Remote — Containers** and **Remote — SSH** extensions automatically forward the
+`codebase-memory.graphPort` (default 9749) to your local browser. No extra configuration needed.
 
 ---
 

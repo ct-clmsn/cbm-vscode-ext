@@ -8,11 +8,14 @@ import { registerCommands } from "./commands";
 import { registerHoverProvider } from "./hoverProvider";
 import { registerGraphSearchProvider } from "./searchProvider";
 import { registerLmTools } from "./lmTools";
+import { LiveOutputProvider, LiveResultProvider } from "./outputProvider";
 
 let client: McpClient;
 let treeProvider: ProjectsTreeDataProvider;
 let searchResultsProvider: SearchResultsProvider;
 let graphProvider: GraphWebviewProvider;
+let liveOutputProvider: LiveOutputProvider;
+let liveResultProvider: LiveResultProvider;
 let statusBarItem: vscode.StatusBarItem;
 let outputChannel: vscode.OutputChannel;
 let serverRunning = false;
@@ -29,6 +32,15 @@ async function activate(ctx: vscode.ExtensionContext): Promise<void> {
 
   client = new McpClient((msg: string) => log(msg));
   registerLmTools(ctx, client);
+  liveOutputProvider = new LiveOutputProvider();
+  liveResultProvider = new LiveResultProvider();
+  client.onOutput((source, line) => {
+    liveOutputProvider.append(source, line);
+    liveResultProvider.ingestOutput(source, line);
+  });
+  client.onToolResult((toolName, rawText) => {
+    liveResultProvider.ingestToolResult(toolName, rawText);
+  });
   treeProvider = new ProjectsTreeDataProvider(client);
   searchResultsProvider = new SearchResultsProvider();
   graphProvider = new GraphWebviewProvider(ctx.extensionUri);
@@ -53,9 +65,50 @@ async function activate(ctx: vscode.ExtensionContext): Promise<void> {
     searchResultsProvider,
   );
 
+  vscode.window.registerTreeDataProvider(
+    "codebase-memory.liveOutput",
+    liveOutputProvider,
+  );
+
+  vscode.window.registerTreeDataProvider(
+    "codebase-memory.liveResults",
+    liveResultProvider,
+  );
+
   ctx.subscriptions.push(
     vscode.commands.registerCommand("codebase-memory.searchResults.clear", () => {
       searchResultsProvider.clear();
+    }),
+  );
+
+  ctx.subscriptions.push(
+    vscode.commands.registerCommand("codebase-memory.clearOutput", () => {
+      liveOutputProvider.clear();
+    }),
+  );
+
+  ctx.subscriptions.push(
+    vscode.commands.registerCommand("codebase-memory.clearResults", () => {
+      liveResultProvider.clear();
+    }),
+  );
+
+  ctx.subscriptions.push(
+    vscode.commands.registerCommand("codebase-memory.openOutputResult", (filePath: string, line?: number) => {
+      try {
+        const uri = vscode.Uri.file(filePath);
+        vscode.workspace.openTextDocument(uri).then((doc) => {
+          vscode.window.showTextDocument(doc).then((editor) => {
+            if (line && line > 0) {
+              const pos = new vscode.Position(line - 1, 0);
+              editor.selection = new vscode.Selection(pos, pos);
+              editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+            }
+          });
+        });
+      } catch (err) {
+        vscode.window.showErrorMessage(`Failed to open: ${err instanceof Error ? err.message : String(err)}`);
+      }
     }),
   );
 
@@ -74,9 +127,12 @@ async function activate(ctx: vscode.ExtensionContext): Promise<void> {
     const binaryPath = await findBinary();
     if (!binaryPath) {
       log("Binary not found");
+      const isRemote = vscode.env.remoteName !== undefined;
       vscode.window
         .showErrorMessage(
-          "codebase-memory-mcp binary not found. Install it first, or set 'codebase-memory.binaryPath' in settings.",
+          isRemote
+            ? "codebase-memory-mcp binary not found on the remote host. Install it inside your container/SSH host, or set 'codebase-memory.binaryPath' in settings."
+            : "codebase-memory-mcp binary not found. Install it first, or set 'codebase-memory.binaryPath' in settings.",
           "Install Instructions",
           "Open Settings",
         )

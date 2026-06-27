@@ -12,6 +12,7 @@
   "engines": {
     "vscode": "^1.85.0"
   },
+  "extensionKind": ["workspace"],
   "categories": [
     "Programming Languages",
     "Visualization",
@@ -162,6 +163,18 @@
       {
         "command": "codebase-memory.codeSearchAtCursor",
         "title": "Codebase Memory: Graph-Augmented Code Search at Cursor"
+      },
+      {
+        "command": "codebase-memory.openOutputResult",
+        "title": "Codebase Memory: Open Output Result"
+      },
+      {
+        "command": "codebase-memory.clearOutput",
+        "title": "Codebase Memory: Clear Output"
+      },
+      {
+        "command": "codebase-memory.clearResults",
+        "title": "Codebase Memory: Clear Results"
       }
     ],
     "viewsContainers": {
@@ -184,6 +197,16 @@
           "type": "tree",
           "id": "codebase-memory.searchResults",
           "name": "Search Results"
+        },
+        {
+          "type": "tree",
+          "id": "codebase-memory.liveOutput",
+          "name": "Output"
+        },
+        {
+          "type": "tree",
+          "id": "codebase-memory.liveResults",
+          "name": "Results"
         }
       ]
     },
@@ -243,6 +266,16 @@
         {
           "command": "codebase-memory.searchResults.clear",
           "when": "view == codebase-memory.searchResults",
+          "group": "navigation"
+        },
+        {
+          "command": "codebase-memory.clearOutput",
+          "when": "view == codebase-memory.liveOutput",
+          "group": "navigation"
+        },
+        {
+          "command": "codebase-memory.clearResults",
+          "when": "view == codebase-memory.liveResults",
           "group": "navigation"
         }
       ],

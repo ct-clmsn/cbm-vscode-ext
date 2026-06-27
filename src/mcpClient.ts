@@ -5,7 +5,11 @@ interface PendingRequest {
   resolve: (value: unknown) => void;
   reject: (reason: Error) => void;
   timer: ReturnType<typeof setTimeout>;
+  toolName?: string;
 }
+
+export type OutputCallback = (source: "stdout" | "stderr", line: string) => void;
+export type ToolResultCallback = (toolName: string, rawText: string) => void;
 
 export class McpClient {
   private process: ChildProcess | null = null;
@@ -14,9 +18,31 @@ export class McpClient {
   private buffer = "";
   private _ready = false;
   private log: (msg: string) => void;
+  private _onOutput: OutputCallback[] = [];
+  private _onToolResult: ToolResultCallback[] = [];
 
   constructor(logger?: (msg: string) => void) {
     this.log = logger ?? ((msg: string) => console.log(`[cbm] ${msg}`));
+  }
+
+  onOutput(cb: OutputCallback): void {
+    this._onOutput.push(cb);
+  }
+
+  onToolResult(cb: ToolResultCallback): void {
+    this._onToolResult.push(cb);
+  }
+
+  private emitOutput(source: "stdout" | "stderr", line: string): void {
+    for (const cb of this._onOutput) {
+      try { cb(source, line); } catch { /* ignore */ }
+    }
+  }
+
+  private emitToolResult(toolName: string, rawText: string): void {
+    for (const cb of this._onToolResult) {
+      try { cb(toolName, rawText); } catch { /* ignore */ }
+    }
   }
 
   get ready(): boolean {
@@ -36,13 +62,19 @@ export class McpClient {
         this.process = proc;
 
         proc.stdout!.on("data", (data: Buffer) => {
-          this.buffer += data.toString();
+          const chunk = data.toString();
+          this.buffer += chunk;
           this.processBuffer();
+          for (const line of chunk.split("\n").filter(Boolean)) {
+            this.emitOutput("stdout", line.trim());
+          }
         });
 
         proc.stderr!.on("data", (data: Buffer) => {
           for (const line of data.toString().split("\n").filter(Boolean)) {
-            this.log(line.trim());
+            const trimmed = line.trim();
+            this.log(trimmed);
+            this.emitOutput("stderr", trimmed);
           }
         });
 
@@ -97,7 +129,7 @@ export class McpClient {
         reject(new Error(`Tool call "${name}" timed out (30s)`));
       }, 30000);
 
-      this.pending.set(id, { resolve, reject, timer });
+      this.pending.set(id, { resolve, reject, timer, toolName: name });
 
       try {
         this.process!.stdin!.write(request + "\n");
@@ -187,7 +219,16 @@ export class McpClient {
     }
   }
 
-  private handleMessage(msg: { id?: number; result?: { content?: { type: string; text: string }[] }; error?: { code: number; message: string } }): void {
+  private handleMessage(msg: {
+    id?: number;
+    result?: { content?: { type: string; text: string }[] };
+    error?: { code: number; message: string };
+    method?: string;
+    params?: { name?: string };
+  }): void {
+    if (msg.method === "tools/call" && msg.params?.name) {
+      return;
+    }
     if (msg.id !== undefined && msg.id !== null) {
       const pending = this.pending.get(msg.id);
       if (pending) {
@@ -199,6 +240,7 @@ export class McpClient {
           const result = msg.result;
           const text = result?.content?.[0]?.text;
           if (text !== undefined) {
+            this.emitToolResult(pending.toolName ?? "(unknown)", text);
             try {
               pending.resolve(JSON.parse(text));
             } catch {
