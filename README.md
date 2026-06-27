@@ -7,5 +7,5 @@ The software is provided under the [Boost License](https://www.boost.org/doc/use
 
 == Author ==
 
-Chris Taylor
+Chris Taylor - Hidden Layer, LLC
 (copyright 2026)
