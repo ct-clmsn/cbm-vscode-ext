@@ -1,13 +1,13 @@
 {
   "name": "codebase-memory-vscode",
   "displayName": "Codebase Memory",
-  "description": "Codebase knowledge graph: structural search, call traces, architecture, and 3D graph visualization",
+  "description": "VSCode Plugin for DeusData's Codebase knowledge graph: structural search, call traces, architecture, and 3D graph visualization",
   "version": "0.1.0",
-  "publisher": "DeusData",
+  "publisher": "Hidden Layer, LLC (VSCode Plugin) / DeusData (codebase-memory-mcp)",
   "license": "BSL-1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DeusData/codebase-memory-mcp-vscode-ext"
+    "url": "https://github.com/ct-clmsn/codebase-memory-mcp-vscode-ext"
   },
   "engines": {
     "vscode": "^1.85.0"
